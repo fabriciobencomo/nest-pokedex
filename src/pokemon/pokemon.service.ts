@@ -20,11 +20,7 @@ export class PokemonService {
       const pokemon = await this.pokemonModel.create(createPokemonDto)
       return pokemon
     } catch (error) {
-      if(error.code === 11000){
-        throw new BadRequestException(`Pokemon exitst in db ${JSON.stringify(error.keyValue)}`)
-      }
-      console.log(error)
-      throw new InternalServerErrorException(`Can't create Pokemon - Check Server logs`)
+      this.handleExceptions(error)
     }
 
 
@@ -62,12 +58,29 @@ export class PokemonService {
     if(updatePokemonDto.name)
       updatePokemonDto.name = updatePokemonDto.name.toLowerCase()
 
-    await pokemon.updateOne(updatePokemonDto, {new: true})
+    try {
+      await pokemon.updateOne(updatePokemonDto, {new: true})
+      return {...pokemon.toJSON(), ...updatePokemonDto} 
+    }catch (error) {
+      this.handleExceptions(error)
+    }
 
-    return {...pokemon.toJSON(), ...updatePokemonDto}
+
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} pokemon`;
+  async remove(id: string) {
+    // const result = await this.pokemonModel.findByIdAndDelete(id)
+    const result = await this.pokemonModel.deleteOne({_id: id})
+    if(result.deletedCount === 0) throw new BadRequestException(`Pokemon with id ${id} not found`)
+    return result
+  }
+
+
+  private handleExceptions(error: any){
+    if(error.code === 11000){
+      throw new BadRequestException(`Pokemon exitst in db ${JSON.stringify(error.keyValue)}`)
+    }
+    console.log(error)
+    throw new InternalServerErrorException(`Can't create Pokemon - Check Server logs`)
   }
 }
