@@ -21,6 +21,10 @@ npm i -g @nestjs/cli
 ```
 docker-compose up -d
 ```
+5. Recreate Database with seed
+```
+localhost:3000/api/v2/seed
+```
 
 ## Stack
 
