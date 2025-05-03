@@ -17,6 +17,8 @@ lerna-debug.log*
 
 /mongo
 
+.env
+
 # Tests
 /coverage
 /.nyc_output
