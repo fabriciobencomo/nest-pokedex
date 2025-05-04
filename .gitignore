@@ -18,6 +18,7 @@ lerna-debug.log*
 /mongo
 
 .env
+.env.prod
 
 # Tests
 /coverage
